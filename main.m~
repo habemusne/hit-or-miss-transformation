@@ -9,19 +9,16 @@ function result = main()
   img_bw = opening(img_bw, struct_elm_noise);
 %   struct_elm_noise = ~struct_elm_noise;
 %   img_bw = opening(img_bw, struct_elm_noise);
-%   imshowpair(img, img_bw, 'montage');
+  imshowpair(img, img_bw, 'montage');
 
 %   struct_elm_noise = strel('disk', 3, 0).Neighborhood;
 %   img_bw = opening(img_bw, struct_elm_noise);
 %   img_bw = closing(img_bw, struct_elm_noise);
 
   % STEP 2: filter middle-sized circles
-  struct_elm_a = strel('disk', 5, 0).Neighborhood;
-  struct_elm_a = padarray(struct_elm_a, 1, 0, 'both');
-  struct_elm_a = padarray(struct_elm_a.', 1, 0, 'both').';
-  struct_elm_b = ~(struct_elm_a);
+  struct_elm_a = strel('disk', 10, 0);
+  struct_elm_b = ~(struct_elm_a.Neighborhood;
   img_final = hit_or_miss(img_bw, struct_elm_a, struct_elm_b);
-  imshowpair(img, img_final, 'montage');
   result = 0;
 end
 
