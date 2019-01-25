@@ -1,17 +1,17 @@
 function result = main()
   img = imread('RandomDisks-P10.jpg');
 %   img = imread('test.png');
-  img = imbinarize(img, 0);
+  img_bw = im2bw(img);
 
   % STEP 1: filter noise
-  struct_elm_noise = strel('disk', 3, 1).Neighborhood;
-  img = opening(img, struct_elm_noise);
-  img = closing(img, struct_elm_noise);
-  imshow(img);
+  struct_elm_noise = strel('disk', 1, 0).Neighborhood;
+  img_bw = opening(img_bw, struct_elm_noise);
+  img_bw = closing(img_bw, struct_elm_noise);
+  imshowpair(img, img_bw, 'montage')
 
   % STEP 2: filter middle-sized circles
-  % struct_elm_a = strel('disk', 10, 1);
-  % struct_elm_b = strel('disk', 10, 1); %TODO make this hollow...
+  % struct_elm_a = strel('disk', 10, 0);
+  % struct_elm_b = strel('disk', 10, 0); %TODO make this hollow...
   result = 0;
 end
 
@@ -65,13 +65,14 @@ function result = minkowski_op(operation, input_img, struct_elm)
         continue;
       end
 
-      y_offset = offset(rem(struct_w, 2)+1, rem(struct_h, 2)+1, 1);
-      x_offset = offset(rem(struct_w, 2)+1, rem(struct_h, 2)+1, 2);
-      mask = (input_img_padded(y1 : y2+y_offset, x1 : x2+x_offset)) & struct_elm;
+%       y_offset = offset(rem(struct_w, 2)+1, rem(struct_h, 2)+1, 1);
+%       x_offset = offset(rem(struct_w, 2)+1, rem(struct_h, 2)+1, 2);
+%       mask = (input_img_padded(y1 : y2+y_offset, x1 : x2+x_offset)) & struct_elm;
+      mask = (input_img_padded(y1:y2, x1:x2)) & struct_elm;
 
-      if (operation == 'subtraction' && isequal(mask, struct_elm))
+      if (strcmp(operation, 'subtraction') && isequal(mask, struct_elm))
         dia_out(row, col) = dia_out(row, col)|struct_elm(struct_h_half+1, struct_w_half+1);
-      elseif (operation == 'addition' && any(mask(:) == 1))
+      elseif (strcmp(operation, 'addition') && any(mask(:) == 1))
         dia_out(row, col) = 1;  %TODO I am not sure
       end
     end
